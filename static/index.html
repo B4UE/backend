@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingredient Health Analyzer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .camera-container {
+            position: relative;
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+        #video, #photo {
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto;
+            display: none;
+        }
+        .button-container {
+            margin: 20px 0;
+        }
+        .condition-tag {
+            display: inline-block;
+            background-color: #e9ecef;
+            padding: 5px 10px;
+            margin: 5px;
+            border-radius: 15px;
+        }
+        .remove-condition {
+            margin-left: 8px;
+            cursor: pointer;
+            color: #dc3545;
+        }
+        #canvas {
+            display: none;
+        }
+        .health-preferences {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        #resultsCard {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Ingredient Health Analyzer</h1>
+        
+        <div class="camera-container mb-4">
+            <video id="video" autoplay playsinline></video>
+            <img id="photo" alt="Captured ingredient list">
+            <canvas id="canvas"></canvas>
+        </div>
+
+        <div class="button-container text-center">
+            <button id="startCamera" class="btn btn-primary">Start Camera</button>
+            <button id="capturePhoto" class="btn btn-success" style="display: none;">Capture Photo</button>
+            <button id="retakePhoto" class="btn btn-secondary" style="display: none;">Retake Photo</button>
+        </div>
+
+        <div class="health-preferences">
+            <h3>Health Profile</h3>
+            
+            <div class="mb-3">
+                <label for="dietType" class="form-label">Diet Type:</label>
+                <select class="form-select" id="dietType">
+                    <option value="none">No specific diet</option>
+                    <option value="vegetarian">Vegetarian</option>
+                    <option value="vegan">Vegan</option>
+                    <option value="keto">Keto</option>
+                    <option value="paleo">Paleo</option>
+                    <option value="gluten-free">Gluten-free</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Allergies:</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="nutAllergy">
+                    <label class="form-check-label" for="nutAllergy">Nuts</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="dairyAllergy">
+                    <label class="form-check-label" for="dairyAllergy">Dairy</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="shellfishAllergy">
+                    <label class="form-check-label" for="shellfishAllergy">Shellfish</label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Health Conditions:</label>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="conditionInput" placeholder="Enter health condition">
+                    <button class="btn btn-outline-secondary" type="button" id="addCondition">Add</button>
+                </div>
+                <div id="conditionsList"></div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <button id="analyzePhoto" class="btn btn-primary btn-lg" style="display: none;">Analyze Ingredients</button>
+        </div>
+
+        <div class="card mt-4" id="resultsCard">
+            <div class="card-body">
+                <h5 class="card-title">Analysis Results</h5>
+                <p class="card-text" id="analysisResults"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
