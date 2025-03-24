@@ -9,7 +9,7 @@ import logging
 import time
 from datetime import datetime
 from dotenv import load_dotenv
-
+from gemini import get_text_response, get_vision_response
 # Import AI21 client library
 from ai21 import AI21Client
 from ai21.models.chat.chat_message import SystemMessage, UserMessage, AssistantMessage
@@ -87,7 +87,7 @@ def detect_agent_type(conversation, user_profile=None):
         """
         
         # Create a user prompt that includes the conversation context
-        user_prompt = f"Based on this conversation, which agent should handle this request? Last user message: '{last_message.get('content')}'\n\nUser profile: {json.dumps(user_profile) if user_profile else 'None'}\n\nFull conversation context: {json.dumps(conversation[-3:]) if len(conversation) > 3 else json.dumps(conversation)}"
+        user_prompt = f"""Based on this conversation, which agent should handle this request? Last user message: '{last_message.get('content')}'\n\nUser profile: {json.dumps(user_profile) if user_profile else 'None'}\n\nFull conversation context: {json.dumps(conversation[-3:]) if len(conversation) > 3 else json.dumps(conversation)}"""
         
         # Call the AI21 LLM
         messages = [
@@ -789,38 +789,35 @@ def orchestrate():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route('/api/image-scan', methods=['POST'])
-def image_scan():
+def analyze_image():
     """
-    Endpoint for uploading an image and returning a detailed description of its contents
+    Endpoint for analyzing images using Gemini Vision
     """
     try:
-        # Check if there's an image in the request
-        image_data = None
-        if request.files and 'imageFile' in request.files:
-            # Handle file upload
-            image_file = request.files['imageFile']
-            image_data = image_file.read()
-        elif request.json and request.json.get('imageData'):
-            # Handle base64 encoded image
-            image_data = base64.b64decode(request.json.get('imageData'))
-            
-        if not image_data:
-            return jsonify({"status": "error", "message": "Image data is required"}), 400
-            
-        # Process the image
-        recognition_result = mock_image_recognition(image_data)
-        
+        if 'image' not in request.files:
+            return jsonify({'error': 'No image file provided'}), 400
+
+        image_file = request.files['image']
+        if image_file.filename == '':
+            return jsonify({'error': 'No selected file'}), 400
+
+        # Read the image file
+        image_data = image_file.read()
+        prompt = request.form.get('prompt', "This image has either list of ingredients or a photo of food or a lab report or user health report. Analyze and provide response as lists. if it is a health report, we need values in the form of key-value pairs.")
+
+        # Analyze image with Gemini Vision
+        analysis = get_vision_response(prompt, image_data)
+
         return jsonify({
-            "status": "success",
-            "description": f"Image recognized as: {recognition_result['foodItem']}",
-            "foodItem": recognition_result['foodItem'],
-            "isAllowed": recognition_result['isAllowed'],
-            "reason": recognition_result['reason']
+            'analysis': analysis
         })
-        
+
     except Exception as e:
-        logger.error(f"Error in image-scan: {str(e)}")
-        return jsonify({"status": "error", "message": str(e)}), 500
+        logger.error(f"Error in image analysis endpoint: {str(e)}")
+        return jsonify({
+            'error': 'Internal server error',
+            'details': str(e)
+        }), 500
 
 @app.route('/health', methods=['GET'])
 def health_check():
