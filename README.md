@@ -1,12 +1,16 @@
-# Ingredient Health Analyzer
+# Ingredient Health Analyzer - Backend
 
 This application analyzes ingredient lists from photos and provides personalized health insights based on user dietary preferences and health conditions.
 
+## Overview
+This is the backend server for the Ingredient Health Analyzer. It handles image processing, ingredient analysis using AI, and generates personalized health insights based on user profiles.
+
 ## Features
-- Capture photos of ingredient lists using device camera
-- User health profile management (diet type, allergies, health conditions)
+- RESTful API endpoints for client interaction
+- Image processing and text extraction
 - Real-time ingredient analysis using OpenAI's Vision model
-- Personalized health insights and warnings
+- Personalized health insights and warnings based on user health profiles
+- User data storage and management
 
 ## Setup
 
@@ -31,16 +35,14 @@ OPENAI_API_KEY=your_api_key_here
 python app.py
 ```
 
-The app will be available at `http://localhost:5000`
+The backend API will be available at `http://localhost:5000`
 
-## Usage
-1. Fill in your health profile (diet type, allergies, health conditions)
-2. Click "Start Camera" to activate your device's camera
-3. Take a photo of an ingredient list
-4. Click "Analyze Ingredients" to get personalized health insights
+## API Endpoints
+- `POST /analyze` - Send image and user profile for analysis
+- `GET /profile/:id` - Get user profile
+- `POST /profile` - Create or update user profile
 
 ## Requirements
 - Python 3.8+
 - OpenAI API key
-- Device with camera access
-- Modern web browser
+- Flask and related dependencies
